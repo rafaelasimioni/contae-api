@@ -1,4 +1,4 @@
 package br.com.contae.infrastructure.usuario;
 
-public class UsuarioRepository {
+public interface UsuarioRepository {
 }
