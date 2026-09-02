@@ -1,4 +1,4 @@
 package br.com.contae.infrastructure.conta;
 
-public class ContaRepository {
+public interface ContaRepository {
 }
