@@ -1,4 +1,4 @@
-package br.com.contae.api.movimentacao;
+package br.com.contae.api.movimentacao.controller;
 
 import br.com.contae.api.movimentacao.dto.MovimentacaoRequestDTO;
 import br.com.contae.domain.movimentacao.Movimentacao;
