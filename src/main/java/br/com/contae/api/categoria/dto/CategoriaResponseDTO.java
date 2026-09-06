@@ -42,3 +42,4 @@ public class CategoriaResponseDTO {
         this.usuarioId = usuarioId;
     }
 }
+//
