@@ -1,16 +1,9 @@
 package br.com.contae.domain.categoria;
-
 import br.com.contae.domain.usuario.Usuario;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "categorias")
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Categoria {
 
     // Identificador unico da categoria.
@@ -25,13 +18,36 @@ public class Categoria {
     private Usuario usuario;
 
     // Nome da categoria.
-    @Setter
     @Column(nullable = false, length = 100)
     private String nome;
+
+    // Construtor vazio exigido pelo JPA/Hibernate.
+    protected Categoria() {
+    }
 
     // Construtor utilizado para criar uma categoria.
     public Categoria(Usuario usuario, String nome) {
         this.usuario = usuario;
+        this.nome = nome;
+    }
+
+    // Retorna o ID da categoria.
+    public Long getId() {
+        return id;
+    }
+
+    // Retorna o usuario dono da categoria.
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    // Retorna o nome da categoria.
+    public String getNome() {
+        return nome;
+    }
+
+    // Altera o nome da categoria.
+    public void setNome(String nome) {
         this.nome = nome;
     }
 }
