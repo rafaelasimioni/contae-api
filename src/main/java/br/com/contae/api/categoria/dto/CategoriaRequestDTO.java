@@ -1,29 +1,19 @@
 package br.com.contae.api.categoria.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(description = "Dados enviados pelo cliente para criar ou atualizar uma categoria")
 public class CategoriaRequestDTO {
-    // Nome da categoria informado pelo cliente.
+
+    @Schema(description = "Nome da categoria", example = "Alimentação")
     private String nome;
 
-    // ID do usuario dono da categoria.
+    @Schema(description = "ID do usuário dono da categoria", example = "1")
     private Long usuarioId;
-
-    // Construtor vazio exigido para o Spring converter o JSON recebido.
-    public CategoriaRequestDTO() {
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
 }
