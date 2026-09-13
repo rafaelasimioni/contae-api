@@ -7,7 +7,9 @@ import br.com.contae.domain.conta.Conta;
 import br.com.contae.domain.usuario.Usuario;
 import br.com.contae.infrastructure.conta.ContaRepository;
 import br.com.contae.infrastructure.usuario.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,36 +24,34 @@ public class ContaService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public List<ContaResponseDTO> listar() {
-        return contaRepository.findAll()
+    public List<ContaResponseDTO> listar(String email) {
+        return contaRepository.findAllByUsuario_Email(email)
                 .stream()
                 .map(ContaMapper::toResponseDTO)
                 .toList();
     }
 
-    public List<ContaResponseDTO> listarPorUsuario(Long usuarioId) {
-        return contaRepository.findByUsuarioId(usuarioId)
-                .stream()
-                .map(ContaMapper::toResponseDTO)
-                .toList();
-    }
-
-    public ContaResponseDTO buscarPorId(Long id) {
-        Conta conta = contaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conta nao encontrada"));
-        return ContaMapper.toResponseDTO(conta);
-    }
-
-    public ContaResponseDTO salvar(ContaRequestDTO dto) {
-        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
+    public ContaResponseDTO salvar(ContaRequestDTO dto, String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         Conta conta = ContaMapper.toEntity(dto, usuario);
         Conta contaSalva = contaRepository.save(conta);
         return ContaMapper.toResponseDTO(contaSalva);
     }
 
-    public void excluir(Long id) {
-        contaRepository.deleteById(id);
+    public ContaResponseDTO buscarPorId(Long id, String email) {
+        Conta conta = contaRepository.findByIdAndUsuario_Email(id, email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Conta não encontrada"));
+        return ContaMapper.toResponseDTO(conta);
+    }
+
+    public void excluir(Long id, String email) {
+        Conta conta = contaRepository.findByIdAndUsuario_Email(id, email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Conta não encontrada"));
+        contaRepository.delete(conta);
     }
 }
