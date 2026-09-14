@@ -1,6 +1,7 @@
 package br.com.contae.application.movimentacao;
 
 import br.com.contae.api.movimentacao.dto.MovimentacaoRequestDTO;
+import br.com.contae.api.movimentacao.dto.MovimentacaoResponseDTO;
 import br.com.contae.api.movimentacao.mapper.MovimentacaoMapper;
 import br.com.contae.domain.categoria.Categoria;
 import br.com.contae.domain.conta.Conta;
@@ -23,25 +24,8 @@ public class MovimentacaoService {
     private final ContaRepository contaRepository;
     private final CategoriaRepository categoriaRepository;
 
-
-    public Movimentacao criar (MovimentacaoRequestDTO dto){
-
-        Conta conta = contaRepository.findById(dto.getContaId())
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
-
-        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
-
-        Movimentacao movimentacao = MovimentacaoMapper.toEntity(dto,conta,categoria);
-
-        return movimentacaoRepository.save(movimentacao);
-    }
-
-    //atualizar
-    public Movimentacao atualizar (Long id, MovimentacaoRequestDTO dto){
-
-        Movimentacao movimentacao = movimentacaoRepository.findById(id)
-                .orElseThrow(() -> new  RuntimeException ("Movimentação não encontrada"));
+    // Criar
+    public MovimentacaoResponseDTO criar(MovimentacaoRequestDTO dto) {
 
         Conta conta = contaRepository.findById(dto.getContaId())
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
@@ -49,38 +33,89 @@ public class MovimentacaoService {
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
 
-        MovimentacaoMapper.atualizar(movimentacao, dto , conta, categoria);
+        Movimentacao movimentacao = MovimentacaoMapper.toEntity(
+                dto,
+                conta,
+                categoria
+        );
 
-        return movimentacaoRepository.save(movimentacao);
+        Movimentacao salva = movimentacaoRepository.save(movimentacao);
+
+        return MovimentacaoMapper.toResponseDTO(salva);
     }
 
-    //deletar
+    // Atualizar
+    public MovimentacaoResponseDTO atualizar(
+            Long id,
+            MovimentacaoRequestDTO dto) {
 
-    public void deletar (Long id){
         Movimentacao movimentacao = movimentacaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("movimentação não encontrada"));
+                .orElseThrow(() ->
+                        new RuntimeException("Movimentação não encontrada"));
+
+        Conta conta = contaRepository.findById(dto.getContaId())
+                .orElseThrow(() ->
+                        new RuntimeException("Conta não encontrada"));
+
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() ->
+                        new RuntimeException("Categoria não encontrada"));
+
+        MovimentacaoMapper.atualizar(
+                movimentacao,
+                dto,
+                conta,
+                categoria
+        );
+
+        Movimentacao atualizada = movimentacaoRepository.save(movimentacao);
+
+        return MovimentacaoMapper.toResponseDTO(atualizada);
+    }
+
+    // Deletar
+    public void deletar(Long id) {
+
+        Movimentacao movimentacao = movimentacaoRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Movimentação não encontrada"));
 
         movimentacaoRepository.delete(movimentacao);
     }
 
-    //buscar todas
-    public List<Movimentacao> buscarTodas(){
-        return movimentacaoRepository.findAll();
+    // Buscar todas
+    public List<MovimentacaoResponseDTO> buscarTodas() {
+
+        return movimentacaoRepository.findAll()
+                .stream()
+                .map(MovimentacaoMapper::toResponseDTO)
+                .toList();
     }
 
-    //buscar movimentacao por data
-    public List<Movimentacao> buscarPorData(LocalDate data) {
-        return movimentacaoRepository.findByData(data);
+    // Buscar movimentações por data
+    public List<MovimentacaoResponseDTO> buscarPorData(LocalDate data) {
+
+        return movimentacaoRepository.findByData(data)
+                .stream()
+                .map(MovimentacaoMapper::toResponseDTO)
+                .toList();
     }
 
-    //buscar movimentacao por categoria
-    public List<Movimentacao> buscarPorCategoria(Long categoriaId){
-        return movimentacaoRepository.findByCategoriaId(categoriaId);
+    // Buscar movimentações por categoria
+    public List<MovimentacaoResponseDTO> buscarPorCategoria(Long categoriaId) {
+
+        return movimentacaoRepository.findByCategoriaId(categoriaId)
+                .stream()
+                .map(MovimentacaoMapper::toResponseDTO)
+                .toList();
     }
 
-    //buscar movimentacao por conta
+    // Buscar movimentações por conta
+    public List<MovimentacaoResponseDTO> buscarPorConta(Long contaId) {
 
-    public List<Movimentacao> buscarPorConta(Long contaId){
-        return movimentacaoRepository.findByContaId(contaId);
+        return movimentacaoRepository.findByContaId(contaId)
+                .stream()
+                .map(MovimentacaoMapper::toResponseDTO)
+                .toList();
     }
 }
