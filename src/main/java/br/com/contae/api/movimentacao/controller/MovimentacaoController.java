@@ -3,6 +3,8 @@ package br.com.contae.api.movimentacao.controller;
 import br.com.contae.api.movimentacao.dto.MovimentacaoRequestDTO;
 import br.com.contae.domain.movimentacao.Movimentacao;
 import br.com.contae.application.movimentacao.MovimentacaoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/movimentacoes")
 @RequiredArgsConstructor
+@Tag(name = "Movimentações", description = "Operações de movimentações financeiras")
 public class MovimentacaoController {
 
     private final MovimentacaoService movimentacaoService;
 
-    // Criar
+
     @PostMapping
+    @Operation(summary = "Criar movimentação")
     public ResponseEntity<Movimentacao> criar(
             @RequestBody MovimentacaoRequestDTO dto) {
 
@@ -30,8 +34,9 @@ public class MovimentacaoController {
                 .body(movimentacao);
     }
 
-    // Atualizar
+
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar movimentação")
     public ResponseEntity<Movimentacao> atualizar(
             @PathVariable Long id,
             @RequestBody MovimentacaoRequestDTO dto) {
@@ -41,8 +46,9 @@ public class MovimentacaoController {
         return ResponseEntity.ok(movimentacao);
     }
 
-    // Deletar
+
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar movimentação")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
 
         movimentacaoService.deletar(id);
@@ -52,6 +58,7 @@ public class MovimentacaoController {
 
     // Buscar todas
     @GetMapping
+    @Operation(summary = "Buscar todas as movimentações")
     public ResponseEntity<List<Movimentacao>> buscarTodas() {
 
         return ResponseEntity.ok(movimentacaoService.buscarTodas());
@@ -59,6 +66,7 @@ public class MovimentacaoController {
 
     // Buscar por data
     @GetMapping("/data/{data}")
+    @Operation(summary = "Buscar movimentações por data")
     public ResponseEntity<List<Movimentacao>> buscarPorData(
             @PathVariable LocalDate data) {
 
@@ -67,6 +75,7 @@ public class MovimentacaoController {
 
     // Buscar por categoria
     @GetMapping("/categoria/{categoriaId}")
+    @Operation(summary = "Buscar movimentações por categoria")
     public ResponseEntity<List<Movimentacao>> buscarPorCategoria(
             @PathVariable Long categoriaId) {
 
@@ -77,6 +86,7 @@ public class MovimentacaoController {
 
     // Buscar por conta
     @GetMapping("/conta/{contaId}")
+    @Operation(summary = "Buscar movimentações por conta")
     public ResponseEntity<List<Movimentacao>> buscarPorConta(
             @PathVariable Long contaId) {
 
