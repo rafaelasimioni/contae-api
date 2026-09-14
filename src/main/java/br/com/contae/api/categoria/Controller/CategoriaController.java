@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,8 @@ public class CategoriaController {
     @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
     public List<CategoriaResponseDTO> listar() {
         return categoriaService.listar();
+    public List<CategoriaResponseDTO> listar(Authentication authentication) {
+        return categoriaService.listar(authentication.getName());
     }
 
     @GetMapping("/{id}")
@@ -32,6 +36,8 @@ public class CategoriaController {
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     public CategoriaResponseDTO buscarPorId(@PathVariable Long id) {
         return categoriaService.buscarPorId(id);
+    public CategoriaResponseDTO buscarPorId(@PathVariable Long id, Authentication authentication) {
+        return categoriaService.buscarPorId(id, authentication.getName());
     }
 
     @PostMapping
@@ -39,6 +45,9 @@ public class CategoriaController {
     @ApiResponse(responseCode = "200", description = "Categoria criada com sucesso")
     public CategoriaResponseDTO salvar(@RequestBody CategoriaRequestDTO dto) {
         return categoriaService.salvar(dto);
+    public CategoriaResponseDTO salvar(@Valid @RequestBody CategoriaRequestDTO dto,
+                                       Authentication authentication) {
+        return categoriaService.salvar(dto, authentication.getName());
     }
 
     @DeleteMapping("/{id}")
@@ -47,5 +56,7 @@ public class CategoriaController {
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     public void excluir(@PathVariable Long id) {
         categoriaService.excluir(id);
+    public void excluir(@PathVariable Long id, Authentication authentication) {
+        categoriaService.excluir(id, authentication.getName());
     }
 }
