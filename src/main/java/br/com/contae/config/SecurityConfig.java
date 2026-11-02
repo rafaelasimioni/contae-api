@@ -48,21 +48,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Habilita o CORS configurado no CorsConfig
                 .cors(Customizer.withDefaults())
+                // Desativa CSRF pois APIs REST com JWT são stateless
                 .csrf(csrf -> csrf.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(formLogin -> formLogin.disable())
+                // Garante que a aplicação não cria sessões HTTP (Stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Define o comportamento de erro para não autenticado (retorna 401 puro em vez de redirecionar para login)
                 .exceptionHandling(e -> e.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                // Regras de autorização de rotas
                 .authorizeHttpRequests(auth -> auth
+                        // Libera requisições de CORS preflight (OPTIONS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Libera a raiz da API (para evitar o 401 ao abrir o link do Render no navegador)
+                        .requestMatchers(HttpMethod.GET, "/").permitAll()
+
+                        // Rotas públicas de autenticação e registo
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        // Documentação da API (Swagger)
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                        // Qualquer outra rota obrigatoriamente exige autenticação (Token JWT)
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                // Adiciona o filtro JWT antes do filtro padrão de utilizador/senha
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
